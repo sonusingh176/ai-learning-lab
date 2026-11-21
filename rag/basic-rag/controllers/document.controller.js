@@ -1,4 +1,9 @@
+import { randomUUID } from "node:crypto";
 import { PDFParse } from "pdf-parse";
+
+
+import { createChunks } from "../services/chunk.service.js";
+import { saveDocument } from "../services/document.store.js";
 
 export const uploadDocument =async(req,res)=>{
     let parser;
@@ -32,14 +37,29 @@ export const uploadDocument =async(req,res)=>{
             });
         }
 
+        // Create chunks
+        const chunks = createChunks(extractedText);
+
+        // Generate unique document ID
+        const documentId = randomUUID();
+
+        // Store document and chunks in memory
+        saveDocument(documentId, {
+        filename: req.file.originalname,
+        chunks
+        });
+        
+
         return res.status(200).json({
             success:true,
             message:"PDF text extracted successfully",
             data:{
+                documentId,
                 filename: req.file.originalname,
                 totalPages: result.total,
                 textLength: extractedText.length,
-                extractedText,
+                totalChunks: chunks.length,
+                // extractedText,
             },
         });
 

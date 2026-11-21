@@ -1,8 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
+
 import connectDB from "./config/db.js";
 
 import documentRoutes from "./routes/document.routes.js";
+import ragRoutes from "./routes/rag.routes.js";
 
 dotenv.config();
 
@@ -12,6 +14,9 @@ app.use(express.json());
 
 // Document routes
 app.use("/api/documents", documentRoutes);
+
+// New RAG chat API
+app.use("/api/rag", ragRoutes);
 
 // Test API
 app.get("/", (req, res) => {
